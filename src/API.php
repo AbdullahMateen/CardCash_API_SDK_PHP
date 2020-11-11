@@ -9,6 +9,7 @@ class API
     protected $_appID;
     protected $_debug;
     protected $_headers;
+    protected $_myCookie;
 
     const TIMEOUT = 30;
 
@@ -85,7 +86,7 @@ class API
 
         if ($path !== "session" && empty( $this->getMyCookie() ) )
         {
-            $this->execute(POST, 'session');
+            $this->execute( self::POST, 'session');
         }
 
         if ($this->_debug)
@@ -104,18 +105,18 @@ class API
         $ch = curl_init();
         curl_setopt($ch , CURLOPT_URL , $this->_uri.$path);
         curl_setopt($ch , CURLOPT_HTTPHEADER , $this->getHeaders());
-        curl_setopt($ch , CURLOPT_TIMEOUT , $this->_timeout);
+        curl_setopt($ch , CURLOPT_TIMEOUT , self::TIMEOUT);
         curl_setopt($ch , CURLOPT_HEADER , true);
         curl_setopt($ch , CURLOPT_RETURNTRANSFER , true);
         curl_setopt($ch , CURLOPT_FOLLOWLOCATION , true);
         curl_setopt($ch , CURLOPT_COOKIE , $this->getMyCookie());
 
-        if (jsonObject != null && (POST == $method || PUT == $method))
+        if ($jsonObject != null && (self::POST == $method || self::PUT == $method))
         {
             curl_setopt($ch , CURLOPT_POSTFIELDS , $jsonObject);
         }
 
-        if (POST == $method)
+        if (self::POST == $method)
         {
             curl_setopt($ch , CURLOPT_POST , true);
         }
@@ -147,35 +148,35 @@ class API
         $customer["password"] = $password;
         $loginData = array("customer" => $customer);
 
-        $loginResponse = $this->execute(POST,  "customers/login", json_encode($loginData));
+        $loginResponse = $this->execute(self::POST,  "customers/login", json_encode($loginData));
 
         return $loginResponse;
     }
 
     public function GetCustomer()
     {
-        $getCustomerResponse = $this->execute(GET, "customers");
+        $getCustomerResponse = $this->execute(self::GET, "customers");
 
         return $getCustomerResponse;
     }
 
     public function GetDefaultPaymentOptions()
     {
-        $getCustomerResponse = $this->execute(GET, "customers/payment-options");
+        $getCustomerResponse = $this->execute(self::GET, "customers/payment-options");
 
         return $getCustomerResponse;
     }
 
     public function GetMerchants()
     {
-        $merchantResponse = $this->execute(GET, "merchants/sell");
+        $merchantResponse = $this->execute(self::GET, "merchants/sell");
 
         return $merchantResponse;
     }
 
     public function RetrieveCart()
     {
-        $getCartResponse = $this->execute(GET, "carts");
+        $getCartResponse = $this->execute(self::GET, "carts");
 
         return $getCartResponse;
     }
@@ -184,14 +185,14 @@ class API
     {
         $createCartObj = array("action" => "sell");
 
-        $createCartResponse = $this->execute(POST, "carts", json_encode($createCartObj));
+        $createCartResponse = $this->execute(self::POST, "carts", json_encode($createCartObj));
 
         return $createCartResponse;
     }
 
     public function DeleteCart($cartID)
     {
-        $deleleteCartResponse = $this->execute(DELETE, "carts/" . $cartID);
+        $deleleteCartResponse = $this->execute(self::DELETE, "carts/" . $cartID);
 
         return $deleleteCartResponse;
     }
@@ -218,7 +219,7 @@ class API
         }
 
         $card = array("card" => $addCard);
-        $addCardResponse = $this->execute(POST, "carts/" . $cartID . "/cards", json_encode($card));
+        $addCardResponse = $this->execute(self::POST, "carts/" . $cartID . "/cards", json_encode($card));
 
         return $addCardResponse;
     }
@@ -248,14 +249,14 @@ class API
         }
 
         $card = array("card" => $updateCard);
-        $updateCardResponse = $this->execute(PUT, "carts/" . $cartID . "/cards/" + $cardID, json_encode($card));
+        $updateCardResponse = $this->execute(self::PUT, "carts/" . $cartID . "/cards/" + $cardID, json_encode($card));
 
         return $updateCardResponse;
     }
 
     public function DeleteCardInCart($cartID, $cardID)
     {
-        $deleteCardResponse = $this->execute(DELETE, "carts/" . $cartID . "/cards/" . $cardID);
+        $deleteCardResponse = $this->execute(self::DELETE, "carts/" . $cartID . "/cards/" . $cardID);
 
         return $deleteCardResponse;
     }
@@ -288,7 +289,7 @@ class API
           "paymentDetails" => $paymentDetails
         );
 
-        $orderReponse = $this->execute(POST, "orders", json_encode($order));
+        $orderReponse = $this->execute(self::POST, "orders", json_encode($order));
 
         return $orderReponse;
     }
@@ -296,42 +297,42 @@ class API
 
     public function GetOrder($orderID)
     {
-        $getOrderResponse = $this->execute(GET, "orders/". $orderID);
+        $getOrderResponse = $this->execute(self::GET, "orders/". $orderID);
 
         return $getOrderResponse;
     }
 
     public function GetAllOrders()
     {
-        $getOrdersResponse = $this->execute(GET, "orders/sell");
+        $getOrdersResponse = $this->execute(self::GET, "orders/sell");
 
         return $getOrdersResponse;
     }
 
     public function GetOrderCards($orderID)
     {
-        $getOrdersCardsResponse = $this->execute(GET, "cards/sell?orderId=". $orderID);
+        $getOrdersCardsResponse = $this->execute(self::GET, "cards/sell?orderId=". $orderID);
 
         return $getOrdersCardsResponse;
     }
 
     public function GetAllCards()
     {
-        $getAllCardsResponse = $this->execute(GET, "cards/sell");
+        $getAllCardsResponse = $this->execute(self::GET, "cards/sell");
 
         return $getAllCardsResponse;
     }
 
     public function GetAllPayments()
     {
-        $getAllPaymentsResponse = $this->execute(GET, "payments/sell");
+        $getAllPaymentsResponse = $this->execute(self::GET, "payments/sell");
 
         return $getAllPaymentsResponse;
     }
 
     public function GetPayment($paymentID)
     {
-        $getPaymentResponse = $this->execute(GET, "payments/sell/" . $paymentID);
+        $getPaymentResponse = $this->execute(self::GET, "payments/sell/" . $paymentID);
 
         return $getPaymentResponse;
     }
